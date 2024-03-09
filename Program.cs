@@ -28,7 +28,7 @@ using var udp = new UdpClient(11880)
 
 try
 {
-    await Loop(udp, serialPort, cts);
+    await Loop(udp, serialPort, cts.Token);
 }
 catch (OperationCanceledException)
 {
@@ -43,18 +43,18 @@ catch (Exception e)
     Console.Error.WriteLine("ERR: Unexpected exception {0}", e.Message);
 }
 
-static async Task Loop(UdpClient udp, SerialPort serialPort, CancellationTokenSource cts)
+static async Task Loop(UdpClient udp, SerialPort serialPort, CancellationToken cancellationToken)
 {
     serialPort.Open();
     var stream = serialPort.BaseStream;
 
     var readBuffer = new byte[100];
 
-    while (!cts.IsCancellationRequested)
+    while (!cancellationToken.IsCancellationRequested)
     {
-        var req = await udp.ReceiveAsync(cts.Token);
+        var req = await udp.ReceiveAsync(cancellationToken);
 
-        await stream.WriteAsync(req.Buffer, cts.Token);
+        await stream.WriteAsync(req.Buffer, cancellationToken);
 
 #if DEBUG
         Console.WriteLine("<< {0}", CommandToDisplayString(req.Buffer));
@@ -67,7 +67,7 @@ static async Task Loop(UdpClient udp, SerialPort serialPort, CancellationTokenSo
         int bytesRead = 0;
         do
         {
-            bytesRead += await serialPort.BaseStream.ReadAtLeastAsync(readBuffer.AsMemory(bytesRead), 1, true, cts.Token);
+            bytesRead += await stream.ReadAtLeastAsync(readBuffer.AsMemory(bytesRead), 1, true, cancellationToken);
         } while (readBuffer[bytesRead - 1] != '\r');
 
         var sendTask = udp.SendAsync(readBuffer, bytesRead, req.RemoteEndPoint);
