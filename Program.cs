@@ -38,6 +38,11 @@ while (!cts.IsCancellationRequested)
 
 #if DEBUG
     Console.WriteLine("<< {0}", CommandToDisplayString(req.Buffer));
+
+    if (":e1\r"u8.SequenceEqual(req.Buffer))
+    {
+        Console.WriteLine("INFO: Connection to {0} initialized from {1}", udp.Client.LocalEndPoint, req.RemoteEndPoint);
+    }
 #endif
     int bytesRead = 0;
 
