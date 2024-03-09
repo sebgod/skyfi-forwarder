@@ -2,8 +2,9 @@
 using System.Net.Sockets;
 using System.Text;
 
-var device = "COM4"; //"/dev/ttyUSB0";
-var baudRate = 9600; //115200;
+var device = args.Length > 0 ? args[0] : Environment.OSVersion.Platform is PlatformID.Unix ? "/dev/ttyUSB0" : "COM4";
+var baudRate = args.Length > 1 && int.TryParse(args[1], out var b) ? b : 9600;
+
 var cts = new CancellationTokenSource();
 
 Console.CancelKeyPress += (sender, args) =>
