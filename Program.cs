@@ -87,4 +87,4 @@ static async Task Loop(UdpClient udp, SerialPort serialPort, CancellationToken c
     }
 }
 
-static string CommandToDisplayString(ReadOnlySpan<byte> bytes) => Encoding.ASCII.GetString(bytes).Replace("\r", "\\r").Replace("\n", "\n");
+static string CommandToDisplayString(ReadOnlySpan<byte> bytes) => Encoding.ASCII.GetString(bytes).Replace("\r", "\\r");
