@@ -21,4 +21,4 @@ jobs:
         fetch-depth: 0
 
     - name: Build/Publish app
-      run: dotnet publish --no-build -c ${{ matrix.configuration }}
+      run: dotnet publish -c ${{ matrix.configuration }}
