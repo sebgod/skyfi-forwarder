@@ -20,11 +20,5 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Restore dependencies
-      run: dotnet restore
-
-    - name: Build app
-      run: dotnet build --no-restore -c ${{ matrix.configuration }}
-
-    - name: Publish app
+    - name: Build/Publish app
       run: dotnet publish --no-build -c ${{ matrix.configuration }}
