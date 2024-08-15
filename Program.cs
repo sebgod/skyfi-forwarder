@@ -2,8 +2,11 @@
 using System.Net.Sockets;
 using System.Text;
 
-var device = args.Length > 0 ? args[0] : Environment.OSVersion.Platform is PlatformID.Unix ? "/dev/ttyUSB0" : "COM4";
-var baudRate = args.Length > 1 && int.TryParse(args[1], out var b) ? b : 9600;
+var device = args.Length > 0 ? args[0] : Environment.OSVersion.Platform switch {
+    PlatformID.Unix => "/dev/ttyUSB0",
+    _ => SerialPort.GetPortNames()?.FirstOrDefault() ?? "COM3"
+};
+var baudRate = args.Length > 1 && int.TryParse(args[1], out var arg1AsInt) ? arg1AsInt : 9600;
 
 using var cts = new CancellationTokenSource();
 
@@ -43,7 +46,7 @@ catch (Exception e)
     Console.Error.WriteLine("ERR: Unexpected exception {0}", e.Message);
 }
 
-static async Task Loop(UdpClient udp, SerialPort serialPort, CancellationToken cancellationToken)
+static async ValueTask Loop(UdpClient udp, SerialPort serialPort, CancellationToken cancellationToken)
 {
     serialPort.Open();
     var stream = serialPort.BaseStream;
@@ -80,7 +83,7 @@ static async Task Loop(UdpClient udp, SerialPort serialPort, CancellationToken c
         if (bytesSent != bytesRead)
         {
 #if RELEASE
-        var sentMsg = CommandToDisplayString(readBuffer.AsSpan(0, bytesRead));
+            var sentMsg = CommandToDisplayString(readBuffer.AsSpan(0, bytesRead));
 #endif
             Console.Error.WriteLine("ERR: While sending {0}, expected length = {1} but sent {2}", sentMsg, bytesRead, bytesSent);
         }
