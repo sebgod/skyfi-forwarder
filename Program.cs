@@ -68,10 +68,12 @@ static async ValueTask Loop(UdpClient udp, SerialPort serialPort, CancellationTo
         }
 #endif
         int bytesRead = 0;
+        int bytesReadLast;
         do
         {
-            bytesRead += await stream.ReadAtLeastAsync(readBuffer.AsMemory(bytesRead), 1, true, cancellationToken);
-        } while (readBuffer[bytesRead - 1] != '\r');
+            bytesReadLast = await stream.ReadAtLeastAsync(readBuffer.AsMemory(bytesRead), 1, true, cancellationToken);
+            bytesRead += bytesReadLast;
+        } while (readBuffer[bytesRead - bytesReadLast] != '\r');
 
         var sendTask = udp.SendAsync(readBuffer, bytesRead, req.RemoteEndPoint);
 
