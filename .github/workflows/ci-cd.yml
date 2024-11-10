@@ -12,11 +12,11 @@ jobs:
       fail-fast: false
       matrix:
         configuration: [Debug, Release]
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-22.04]
         include:
           - os: windows-latest
             arm64: win-arm64
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             arm64: linux-arm64
 
     runs-on: ${{ matrix.os }}

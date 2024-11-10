@@ -2,9 +2,10 @@
 using System.Net.Sockets;
 using System.Text;
 
-var device = args.Length > 0 ? args[0] : Environment.OSVersion.Platform switch {
+var device = args.Length > 0 ? args[0] : SerialPort.GetPortNames()?.FirstOrDefault() ?? Environment.OSVersion.Platform switch {
     PlatformID.Unix => "/dev/ttyUSB0",
-    _ => SerialPort.GetPortNames()?.FirstOrDefault() ?? "COM3"
+    PlatformID.Win32NT => "COM3",
+    _ => null
 };
 var baudRate = args.Length > 1 && int.TryParse(args[1], out var arg1AsInt) ? arg1AsInt : 9600;
 
